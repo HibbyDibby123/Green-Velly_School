@@ -12,7 +12,11 @@ const SUPABASE_URL =
     "https://ffjhugmvmxrgvzluzqah.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_zP_jHs6H7PcDp2XBFOwtVQ_IvfW_6bt";
+    "YOUR_PUBLISHABLE_KEY_HERE";
+
+const EDGE_FUNCTION_URL =
+    SUPABASE_URL +
+    "/functions/v1/dynamic-handler";
 
 
 /* =========================================
@@ -279,6 +283,11 @@ if (adminLoginForm) {
 
         if (password === correctPassword) {
 
+            sessionStorage.setItem(
+                "adminPassword",
+                password
+            );
+
             localStorage.setItem(
                 "adminLoggedIn",
                 "true"
@@ -327,6 +336,7 @@ if (
 
 /* =========================================
    ADD STUDENT RESULT
+   USES EDGE FUNCTION
 ========================================= */
 
 const addResultForm =
@@ -385,28 +395,30 @@ if (addResultForm) {
                         .value
                 );
 
-            const total =
-                bangla +
-                english +
-                math +
-                science;
-
-
-            const resultData = {
-
-                bangla: bangla,
-                english: english,
-                math: math,
-                science: science,
-                total: total
-
-            };
-
-
             const message =
                 document.getElementById(
                     "addResultMessage"
                 );
+
+            const adminPassword =
+                sessionStorage.getItem(
+                    "adminPassword"
+                );
+
+            if (!adminPassword) {
+
+                if (message) {
+
+                    message.innerHTML = `
+                        <div class="result-error">
+                            Please log in again.
+                        </div>
+                    `;
+
+                }
+
+                return;
+            }
 
 
             if (message) {
@@ -422,37 +434,61 @@ if (addResultForm) {
 
             try {
 
-                await supabaseRequest(
-                    SUPABASE_URL +
-                    "/rest/v1/results",
-                    {
+                const response =
+                    await fetch(
+                        EDGE_FUNCTION_URL,
+                        {
+                            method: "POST",
 
-                        method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                        headers: {
+                            body: JSON.stringify({
 
-                            "Prefer":
-                                "return=representation"
+                                password:
+                                    adminPassword,
 
-                        },
+                                name:
+                                    name,
 
-                        body: JSON.stringify({
+                                roll:
+                                    roll,
 
-                            student_name: name,
+                                class:
+                                    className,
 
-                            roll: roll,
+                                bangla:
+                                    bangla,
 
-                            class: className,
+                                english:
+                                    english,
 
-                            result:
-                                JSON.stringify(
-                                    resultData
-                                )
+                                math:
+                                    math,
 
-                        })
+                                science:
+                                    science
 
-                    }
-                );
+                            })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Failed to save result."
+                    );
+
+                }
 
 
                 if (message) {
@@ -482,10 +518,11 @@ if (addResultForm) {
 
                             Failed to save result.
 
-                            <br>
+                            <br><br>
 
-                            Please check your
-                            Supabase connection.
+                            ${escapeHTML(
+                                error.message
+                            )}
 
                         </div>
                     `;
@@ -687,46 +724,9 @@ async function displayAdminResults() {
 
 async function deleteResult(id) {
 
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete this result?"
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    try {
-
-        await supabaseRequest(
-
-            SUPABASE_URL +
-            "/rest/v1/results" +
-            "?id=eq." +
-            encodeURIComponent(id),
-
-            {
-
-                method: "DELETE"
-
-            }
-
-        );
-
-
-        displayAdminResults();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not delete the result."
-        );
-
-    }
+    alert(
+        "Delete is not connected to the secure admin function yet."
+    );
 
 }
 
@@ -763,6 +763,10 @@ if (logoutButton) {
 
             localStorage.removeItem(
                 "adminLoggedIn"
+            );
+
+            sessionStorage.removeItem(
+                "adminPassword"
             );
 
             window.location.href =
