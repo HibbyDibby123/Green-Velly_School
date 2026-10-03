@@ -9,9 +9,9 @@ const EDGE_FUNCTION_URL =
     "/functions/v1/dynamic-handler";
 
 
-// ================================
-// PAGE SCROLL ANIMATION
-// ================================
+// =========================================
+// SCROLL GLIDE
+// =========================================
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -19,8 +19,12 @@ document.addEventListener(
 
         const elements =
             document.querySelectorAll(
-                ".fade-in, .card, section, .result-box"
+                ".reveal"
             );
+
+        if (!elements.length) {
+            return;
+        }
 
         const observer =
             new IntersectionObserver(
@@ -34,7 +38,7 @@ document.addEventListener(
                             ) {
 
                                 entry.target.classList.add(
-                                    "visible"
+                                    "show"
                                 );
 
                             }
@@ -62,9 +66,9 @@ document.addEventListener(
 );
 
 
-// ================================
+// =========================================
 // SUPABASE REQUEST
-// ================================
+// =========================================
 
 async function supabaseRequest(
     endpoint,
@@ -99,21 +103,28 @@ async function supabaseRequest(
             }
         );
 
-    const text =
+
+    const responseText =
         await response.text();
 
-    let data = null;
+
+    let data;
+
 
     try {
 
         data =
-            JSON.parse(text);
+            JSON.parse(
+                responseText
+            );
 
     } catch (error) {
 
-        data = text;
+        data =
+            responseText;
 
     }
+
 
     if (!response.ok) {
 
@@ -131,13 +142,14 @@ async function supabaseRequest(
 
     }
 
+
     return data;
 }
 
 
-// ================================
+// =========================================
 // CHECK STUDENT RESULT
-// ================================
+// =========================================
 
 async function checkResult() {
 
@@ -252,7 +264,21 @@ async function checkResult() {
             if (resultContainer) {
 
                 resultContainer.innerHTML =
-                    "<p>No result found.</p>";
+                    `
+                    <div class="result-error">
+
+                        <h3>
+                            Result Not Found
+                        </h3>
+
+                        <p>
+                            No result was found
+                            with the information
+                            you entered.
+                        </p>
+
+                    </div>
+                    `;
 
             }
 
@@ -263,6 +289,7 @@ async function checkResult() {
 
         const student =
             data[0];
+
 
         let resultData =
             student.result;
@@ -291,31 +318,34 @@ async function checkResult() {
 
         if (resultContainer) {
 
-            resultContainer.innerHTML = `
+            resultContainer.innerHTML =
+                `
 
-                <div class="result-card">
+                <div class="result-success">
 
-                    <h2>
+                    <h3>
                         ${escapeHTML(
                             student.student_name
                         )}
-                    </h2>
+                    </h3>
 
                     <p>
-                        Roll:
+                        <strong>Roll:</strong>
                         ${escapeHTML(
                             student.roll
                         )}
                     </p>
 
                     <p>
-                        Class:
+                        <strong>Class:</strong>
                         ${escapeHTML(
                             student.class
                         )}
                     </p>
 
-                    <hr>
+                    <h4>
+                        Marks
+                    </h4>
 
                     <p>
                         Bangla:
@@ -337,14 +367,14 @@ async function checkResult() {
                         ${resultData.science ?? 0}
                     </p>
 
-                    <h3>
+                    <h4>
                         Total:
                         ${resultData.total ?? 0}
-                    </h3>
+                    </h4>
 
                 </div>
 
-            `;
+                `;
 
         }
 
@@ -368,7 +398,21 @@ async function checkResult() {
         if (resultContainer) {
 
             resultContainer.innerHTML =
-                "<p>Something went wrong. Please try again.</p>";
+                `
+
+                <div class="result-error">
+
+                    <h3>
+                        Something went wrong
+                    </h3>
+
+                    <p>
+                        Please try again.
+                    </p>
+
+                </div>
+
+                `;
 
         }
 
@@ -377,9 +421,9 @@ async function checkResult() {
 }
 
 
-// ================================
+// =========================================
 // ADMIN LOGIN
-// ================================
+// =========================================
 
 const adminLoginForm =
     document.getElementById(
@@ -463,6 +507,7 @@ if (adminLoginForm) {
 
                 let data = {};
 
+
                 try {
 
                     data =
@@ -533,9 +578,9 @@ if (adminLoginForm) {
 }
 
 
-// ================================
+// =========================================
 // ADMIN PANEL SECURITY
-// ================================
+// =========================================
 
 if (
     window.location.pathname.endsWith(
@@ -567,9 +612,9 @@ if (
 }
 
 
-// ================================
+// =========================================
 // ADD RESULT
-// ================================
+// =========================================
 
 const addResultForm =
     document.getElementById(
@@ -734,6 +779,7 @@ if (addResultForm) {
 
                 let data = {};
 
+
                 try {
 
                     data =
@@ -799,9 +845,9 @@ if (addResultForm) {
 }
 
 
-// ================================
+// =========================================
 // DISPLAY ADMIN RESULTS
-// ================================
+// =========================================
 
 async function displayAdminResults() {
 
@@ -843,8 +889,39 @@ async function displayAdminResults() {
         }
 
 
-        container.innerHTML =
-            "";
+        let tableHTML = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Roll</th>
+
+                        <th>Class</th>
+
+                        <th>Bangla</th>
+
+                        <th>English</th>
+
+                        <th>Math</th>
+
+                        <th>Science</th>
+
+                        <th>Total</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+        `;
 
 
         data.forEach(
@@ -875,79 +952,80 @@ async function displayAdminResults() {
                 }
 
 
-                const card =
-                    document.createElement(
-                        "div"
-                    );
+                tableHTML += `
 
+                    <tr>
 
-                card.className =
-                    "admin-result-card";
+                        <td>
+                            ${escapeHTML(
+                                student.student_name
+                            )}
+                        </td>
 
+                        <td>
+                            ${escapeHTML(
+                                student.roll
+                            )}
+                        </td>
 
-                card.innerHTML = `
+                        <td>
+                            ${escapeHTML(
+                                student.class
+                            )}
+                        </td>
 
-                    <h3>
-                        ${escapeHTML(
-                            student.student_name
-                        )}
-                    </h3>
+                        <td>
+                            ${resultData.bangla ?? 0}
+                        </td>
 
-                    <p>
-                        Roll:
-                        ${escapeHTML(
-                            student.roll
-                        )}
-                    </p>
+                        <td>
+                            ${resultData.english ?? 0}
+                        </td>
 
-                    <p>
-                        Class:
-                        ${escapeHTML(
-                            student.class
-                        )}
-                    </p>
+                        <td>
+                            ${resultData.math ?? 0}
+                        </td>
 
-                    <p>
-                        Bangla:
-                        ${resultData.bangla ?? 0}
-                    </p>
+                        <td>
+                            ${resultData.science ?? 0}
+                        </td>
 
-                    <p>
-                        English:
-                        ${resultData.english ?? 0}
-                    </p>
+                        <td>
+                            <strong>
+                                ${resultData.total ?? 0}
+                            </strong>
+                        </td>
 
-                    <p>
-                        Math:
-                        ${resultData.math ?? 0}
-                    </p>
+                        <td>
 
-                    <p>
-                        Science:
-                        ${resultData.science ?? 0}
-                    </p>
+                            <button
+                                type="button"
+                                onclick="deleteResult(${student.id})"
+                            >
+                                Delete
+                            </button>
 
-                    <p>
-                        Total:
-                        ${resultData.total ?? 0}
-                    </p>
+                        </td>
 
-                    <button
-                        type="button"
-                        onclick="deleteResult(${student.id})"
-                    >
-                        Delete
-                    </button>
+                    </tr>
 
                 `;
 
-
-                container.appendChild(
-                    card
-                );
-
             }
         );
+
+
+        tableHTML += `
+
+                </tbody>
+
+            </table>
+
+        `;
+
+
+        container.innerHTML =
+            tableHTML;
 
 
     } catch (error) {
@@ -966,9 +1044,9 @@ async function displayAdminResults() {
 }
 
 
-// ================================
+// =========================================
 // DELETE RESULT
-// ================================
+// =========================================
 
 async function deleteResult(id) {
 
@@ -1048,6 +1126,7 @@ async function deleteResult(id) {
 
         let data = {};
 
+
         try {
 
             data =
@@ -1114,9 +1193,9 @@ async function deleteResult(id) {
 }
 
 
-// ================================
+// =========================================
 // LOGOUT
-// ================================
+// =========================================
 
 const logoutButton =
     document.getElementById(
@@ -1149,9 +1228,9 @@ if (logoutButton) {
 }
 
 
-// ================================
+// =========================================
 // LOAD ADMIN RESULTS
-// ================================
+// =========================================
 
 if (
     window.location.pathname.endsWith(
@@ -1164,29 +1243,34 @@ if (
 }
 
 
-// ================================
+// =========================================
 // ESCAPE HTML
-// ================================
+// =========================================
 
 function escapeHTML(value) {
 
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
