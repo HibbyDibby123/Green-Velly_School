@@ -144,6 +144,7 @@ async function supabaseRequest(
 
 
     return data;
+
 }
 
 
@@ -218,6 +219,14 @@ async function checkResult() {
     }
 
 
+    if (resultMessage) {
+
+        resultMessage.textContent =
+            "Searching...";
+
+    }
+
+
     if (resultContainer) {
 
         resultContainer.innerHTML =
@@ -279,6 +288,13 @@ async function checkResult() {
 
                     </div>
                     `;
+
+            }
+
+            if (resultMessage) {
+
+                resultMessage.textContent =
+                    "";
 
             }
 
@@ -416,7 +432,41 @@ async function checkResult() {
 
         }
 
+
+        if (resultMessage) {
+
+            resultMessage.textContent =
+                "";
+
+        }
+
     }
+
+}
+
+
+// =========================================
+// RESULT FORM
+// =========================================
+
+const resultForm =
+    document.getElementById(
+        "resultForm"
+    );
+
+
+if (resultForm) {
+
+    resultForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+            checkResult();
+
+        }
+    );
 
 }
 
