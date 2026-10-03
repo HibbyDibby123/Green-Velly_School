@@ -31,28 +31,42 @@
 
     <header class="site-header">
 
-        <div class="header-inner">
+        <div class="container header-content">
 
-            <div class="logo-area">
+            <a
+                href="index.html"
+                class="school-logo"
+            >
 
-                <h1>
-                    Green Valley School
-                </h1>
+                <div class="logo-circle">
+                    GV
+                </div>
 
-                <p>
-                    Excellence in Education
-                </p>
+                <div>
 
-            </div>
+                    <h1>
+                        Green Valley School
+                    </h1>
+
+                    <p>
+                        Excellence in Education
+                    </p>
+
+                </div>
+
+            </a>
 
 
-            <nav class="main-nav">
+            <nav class="navbar">
 
                 <a href="index.html">
                     Home
                 </a>
 
-                <a href="result.html" class="active">
+                <a
+                    href="result.html"
+                    class="active"
+                >
                     Result
                 </a>
 
@@ -79,7 +93,7 @@
 
             <!-- PAGE HEADING -->
 
-            <div class="section-heading">
+            <div class="section-heading reveal">
 
                 <p class="small-title">
                     STUDENT PORTAL
@@ -102,7 +116,7 @@
 
             <!-- RESULT BOX -->
 
-            <div class="result-box">
+            <div class="result-box reveal">
 
                 <form id="resultForm">
 
@@ -153,12 +167,36 @@
                             Class
                         </label>
 
-                        <input
-                            type="text"
+                        <select
                             id="className"
-                            placeholder="Enter your class"
                             required
                         >
+
+                            <option value="">
+                                Select your class
+                            </option>
+
+                            <option value="6">
+                                Class 6
+                            </option>
+
+                            <option value="7">
+                                Class 7
+                            </option>
+
+                            <option value="8">
+                                Class 8
+                            </option>
+
+                            <option value="9">
+                                Class 9
+                            </option>
+
+                            <option value="10">
+                                Class 10
+                            </option>
+
+                        </select>
 
                     </div>
 
@@ -203,10 +241,71 @@
 
     <footer class="site-footer">
 
-        <p>
-            © 2026 Green Valley School.
-            All rights reserved.
-        </p>
+        <div class="container footer-content">
+
+
+            <div class="footer-school">
+
+                <h3>
+                    Green Valley School
+                </h3>
+
+                <p>
+                    Excellence in Education
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <h4>
+                    Quick Links
+                </h4>
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="result.html">
+                    Result
+                </a>
+
+                <a href="admin.html">
+                    Admin
+                </a>
+
+            </div>
+
+
+            <div class="footer-contact">
+
+                <h4>
+                    Contact
+                </h4>
+
+                <p>
+                    Green Valley School
+                </p>
+
+                <p>
+                    Bangladesh
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 Green Valley School.
+                All rights reserved.
+            </p>
+
+        </div>
 
     </footer>
 
