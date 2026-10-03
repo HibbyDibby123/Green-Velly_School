@@ -12,7 +12,7 @@ const SUPABASE_URL =
     "https://ffjhugmvmxrgvzluzqah.supabase.co";
 
 const SUPABASE_KEY =
-    "YOUR_PUBLISHABLE_KEY_HERE";
+    "sb_publishable_zP_jHs6H7PcDp2XBFOwtVQ_IvfW_6bt";
 
 const EDGE_FUNCTION_URL =
     SUPABASE_URL +
