@@ -1,13 +1,3 @@
-/* =========================================
-   GREEN VALLEY SCHOOL
-   MAIN JAVASCRIPT
-========================================= */
-
-
-/* =========================================
-   SUPABASE
-========================================= */
-
 const SUPABASE_URL =
     "https://ffjhugmvmxrgvzluzqah.supabase.co";
 
@@ -19,69 +9,73 @@ const EDGE_FUNCTION_URL =
     "/functions/v1/dynamic-handler";
 
 
-/* =========================================
-   SCROLL GLIDE
-========================================= */
+// ================================
+// PAGE SCROLL ANIMATION
+// ================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const revealElements = document.querySelectorAll(
-        ".hero-text, " +
-        ".hero-card, " +
-        ".section-heading, " +
-        ".welcome-grid, " +
-        ".info-box, " +
-        ".info-item, " +
-        ".quick-card, " +
-        ".notice-box, " +
-        ".result-box, " +
-        ".admin-login-box, " +
-        ".footer-content > div"
-    );
+        const elements =
+            document.querySelectorAll(
+                ".fade-in, .card, section, .result-box"
+            );
 
-    revealElements.forEach(function (element) {
-        element.classList.add("reveal");
-    });
+        const observer =
+            new IntersectionObserver(
+                function (entries) {
 
-    const revealObserver = new IntersectionObserver(
-        function (entries) {
+                    entries.forEach(
+                        function (entry) {
 
-            entries.forEach(function (entry) {
+                            if (
+                                entry.isIntersecting
+                            ) {
 
-                if (entry.isIntersecting) {
+                                entry.target.classList.add(
+                                    "visible"
+                                );
 
-                    entry.target.classList.add("show");
+                            }
 
-                } else {
+                        }
+                    );
 
-                    entry.target.classList.remove("show");
-
+                },
+                {
+                    threshold: 0.1
                 }
+            );
 
-            });
+        elements.forEach(
+            function (element) {
 
-        },
-        {
-            threshold: 0.15
-        }
-    );
+                observer.observe(
+                    element
+                );
 
-    revealElements.forEach(function (element) {
-        revealObserver.observe(element);
-    });
+            }
+        );
 
-});
+    }
+);
 
 
-/* =========================================
-   SUPABASE REQUEST
-========================================= */
+// ================================
+// SUPABASE REQUEST
+// ================================
 
-async function supabaseRequest(url, options = {}) {
+async function supabaseRequest(
+    endpoint,
+    options = {}
+) {
 
     const response =
         await fetch(
-            url,
+            SUPABASE_URL +
+            "/rest/v1/" +
+            endpoint,
             {
 
                 ...options,
@@ -105,310 +99,287 @@ async function supabaseRequest(url, options = {}) {
             }
         );
 
+    const text =
+        await response.text();
+
+    let data = null;
+
+    try {
+
+        data =
+            JSON.parse(text);
+
+    } catch (error) {
+
+        data = text;
+
+    }
 
     if (!response.ok) {
-
-        const errorText =
-            await response.text();
 
         throw new Error(
             "HTTP " +
             response.status +
             ": " +
-            errorText
+            (
+                typeof data ===
+                "string"
+                    ? data
+                    : JSON.stringify(data)
+            )
         );
 
     }
 
+    return data;
+}
 
-    if (response.status === 204) {
 
-        return null;
+// ================================
+// CHECK STUDENT RESULT
+// ================================
+
+async function checkResult() {
+
+    const nameInput =
+        document.getElementById(
+            "studentName"
+        );
+
+    const rollInput =
+        document.getElementById(
+            "rollNumber"
+        );
+
+    const classInput =
+        document.getElementById(
+            "className"
+        );
+
+    const resultMessage =
+        document.getElementById(
+            "resultMessage"
+        );
+
+    const resultContainer =
+        document.getElementById(
+            "resultContainer"
+        );
+
+
+    if (
+        !nameInput ||
+        !rollInput ||
+        !classInput
+    ) {
+
+        return;
 
     }
 
 
-    return await response.json();
+    const name =
+        nameInput.value.trim();
 
-}
+    const roll =
+        rollInput.value.trim();
 
-
-/* =========================================
-   STUDENT RESULT SEARCH
-========================================= */
-
-const resultForm =
-    document.getElementById(
-        "resultForm"
-    );
+    const studentClass =
+        classInput.value.trim();
 
 
-if (resultForm) {
+    if (
+        !name ||
+        !roll ||
+        !studentClass
+    ) {
 
-    resultForm.addEventListener(
-        "submit",
-        async function (event) {
+        if (resultMessage) {
 
-            event.preventDefault();
+            resultMessage.textContent =
+                "Please enter your name, roll number and class.";
 
+        }
 
-            const studentName =
-                document
-                    .getElementById(
-                        "studentName"
-                    )
-                    .value
-                    .trim();
+        return;
 
-
-            const rollNumber =
-                document
-                    .getElementById(
-                        "rollNumber"
-                    )
-                    .value
-                    .trim();
+    }
 
 
-            const className =
-                document
-                    .getElementById(
-                        "className"
-                    )
-                    .value;
+    if (resultContainer) {
+
+        resultContainer.innerHTML =
+            "Searching...";
+
+    }
 
 
-            const resultMessage =
-                document.getElementById(
-                    "resultMessage"
-                );
+    try {
+
+        const encodedName =
+            encodeURIComponent(
+                name
+            );
+
+        const encodedRoll =
+            encodeURIComponent(
+                roll
+            );
+
+        const encodedClass =
+            encodeURIComponent(
+                studentClass
+            );
 
 
-            resultMessage.innerHTML = `
+        const data =
+            await supabaseRequest(
+                "results?student_name=eq." +
+                encodedName +
+                "&roll=eq." +
+                encodedRoll +
+                "&class=eq." +
+                encodedClass +
+                "&select=*"
+            );
 
-                <div class="result-success">
 
-                    Searching result...
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            if (resultContainer) {
+
+                resultContainer.innerHTML =
+                    "<p>No result found.</p>";
+
+            }
+
+            return;
+
+        }
+
+
+        const student =
+            data[0];
+
+        let resultData =
+            student.result;
+
+
+        if (
+            typeof resultData ===
+            "string"
+        ) {
+
+            try {
+
+                resultData =
+                    JSON.parse(
+                        resultData
+                    );
+
+            } catch (error) {
+
+                resultData = {};
+
+            }
+
+        }
+
+
+        if (resultContainer) {
+
+            resultContainer.innerHTML = `
+
+                <div class="result-card">
+
+                    <h2>
+                        ${escapeHTML(
+                            student.student_name
+                        )}
+                    </h2>
+
+                    <p>
+                        Roll:
+                        ${escapeHTML(
+                            student.roll
+                        )}
+                    </p>
+
+                    <p>
+                        Class:
+                        ${escapeHTML(
+                            student.class
+                        )}
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        Bangla:
+                        ${resultData.bangla ?? 0}
+                    </p>
+
+                    <p>
+                        English:
+                        ${resultData.english ?? 0}
+                    </p>
+
+                    <p>
+                        Math:
+                        ${resultData.math ?? 0}
+                    </p>
+
+                    <p>
+                        Science:
+                        ${resultData.science ?? 0}
+                    </p>
+
+                    <h3>
+                        Total:
+                        ${resultData.total ?? 0}
+                    </h3>
 
                 </div>
 
             `;
 
+        }
 
-            try {
 
-                const url =
-                    SUPABASE_URL +
-                    "/rest/v1/results" +
-                    "?student_name=eq." +
-                    encodeURIComponent(
-                        studentName
-                    ) +
-                    "&roll=eq." +
-                    encodeURIComponent(
-                        rollNumber
-                    ) +
-                    "&class=eq." +
-                    encodeURIComponent(
-                        className
-                    ) +
-                    "&select=*";
+        if (resultMessage) {
 
-
-                const results =
-                    await supabaseRequest(
-                        url
-                    );
-
-
-                if (
-                    results.length === 0
-                ) {
-
-                    resultMessage.innerHTML = `
-
-                        <div class="result-error">
-
-                            <h3>
-                                Result Not Found
-                            </h3>
-
-                            <p>
-                                Please check the
-                                student name,
-                                roll number and class.
-                            </p>
-
-                        </div>
-
-                    `;
-
-                    return;
-
-                }
-
-
-                const foundResult =
-                    results[0];
-
-
-                let marks = {};
-
-
-                try {
-
-                    marks =
-                        JSON.parse(
-                            foundResult.result
-                        );
-
-                } catch (error) {
-
-                    marks = {
-
-                        total:
-                            foundResult.result
-
-                    };
-
-                }
-
-
-                resultMessage.innerHTML = `
-
-                    <div class="result-success">
-
-                        <h3>
-                            Result Found
-                        </h3>
-
-
-                        <p>
-
-                            <strong>
-                                Name:
-                            </strong>
-
-                            ${escapeHTML(
-                                foundResult.student_name
-                            )}
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>
-                                Roll:
-                            </strong>
-
-                            ${escapeHTML(
-                                foundResult.roll
-                            )}
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>
-                                Class:
-                            </strong>
-
-                            ${escapeHTML(
-                                foundResult.class
-                            )}
-
-                        </p>
-
-
-                        <h4>
-                            Marks
-                        </h4>
-
-
-                        <p>
-
-                            Bangla:
-                            ${marks.bangla ?? "-"}
-
-                        </p>
-
-
-                        <p>
-
-                            English:
-                            ${marks.english ?? "-"}
-
-                        </p>
-
-
-                        <p>
-
-                            Mathematics:
-                            ${marks.math ?? "-"}
-
-                        </p>
-
-
-                        <p>
-
-                            Science:
-                            ${marks.science ?? "-"}
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>
-                                Total:
-                            </strong>
-
-                            ${marks.total ?? "-"}
-                            / 400
-
-                        </p>
-
-
-                    </div>
-
-                `;
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                resultMessage.innerHTML = `
-
-                    <div class="result-error">
-
-                        <h3>
-                            Something went wrong
-                        </h3>
-
-                        <p>
-                            Could not connect
-                            to the result database.
-                        </p>
-
-                    </div>
-
-                `;
-
-            }
+            resultMessage.textContent =
+                "";
 
         }
-    );
+
+
+    } catch (error) {
+
+        console.error(
+            "RESULT ERROR:",
+            error
+        );
+
+
+        if (resultContainer) {
+
+            resultContainer.innerHTML =
+                "<p>Something went wrong. Please try again.</p>";
+
+        }
+
+    }
 
 }
 
 
-/* =========================================
-   ADMIN LOGIN
-========================================= */
+// ================================
+// ADMIN LOGIN
+// ================================
 
 const adminLoginForm =
     document.getElementById(
@@ -425,33 +396,33 @@ if (adminLoginForm) {
             event.preventDefault();
 
 
-            const password =
-                document
-                    .getElementById(
-                        "adminPassword"
-                    )
-                    .value;
+            const passwordInput =
+                document.getElementById(
+                    "adminPassword"
+                );
 
-
-            const adminMessage =
+            const message =
                 document.getElementById(
                     "adminMessage"
                 );
 
 
-            if (adminMessage) {
+            const password =
+                passwordInput.value.trim();
 
-                adminMessage.innerHTML = `
 
-                    <div class="admin-success">
+            if (!password) {
 
-                        Checking password...
+                message.textContent =
+                    "Please enter the admin password.";
 
-                    </div>
-
-                `;
+                return;
 
             }
+
+
+            message.textContent =
+                "Checking password...";
 
 
             try {
@@ -492,7 +463,6 @@ if (adminLoginForm) {
 
                 let data = {};
 
-
                 try {
 
                     data =
@@ -507,23 +477,22 @@ if (adminLoginForm) {
                 }
 
 
-                if (
-                    !response.ok ||
-                    !data.success
-                ) {
+                if (!response.ok) {
 
                     throw new Error(
+                        data.error ||
+                        responseText ||
+                        "Login failed."
+                    );
 
-                        "HTTP " +
-                        response.status +
-                        ": " +
+                }
 
-                        (
-                            data.error ||
-                            responseText ||
-                            "Login request failed."
-                        )
 
+                if (!data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Incorrect password."
                     );
 
                 }
@@ -553,27 +522,8 @@ if (adminLoginForm) {
                 );
 
 
-                if (adminMessage) {
-
-                    adminMessage.innerHTML = `
-
-                        <div class="admin-error">
-
-                            <strong>
-                                Login error:
-                            </strong>
-
-                            <br><br>
-
-                            ${escapeHTML(
-                                error.message
-                            )}
-
-                        </div>
-
-                    `;
-
-                }
+                message.textContent =
+                    error.message;
 
             }
 
@@ -583,24 +533,30 @@ if (adminLoginForm) {
 }
 
 
-/* =========================================
-   ADMIN PANEL ACCESS
-========================================= */
+// ================================
+// ADMIN PANEL SECURITY
+// ================================
 
 if (
-    window.location.pathname.includes(
+    window.location.pathname.endsWith(
         "admin-panel.html"
     )
 ) {
 
-    const isLoggedIn =
+    const loggedIn =
         localStorage.getItem(
             "adminLoggedIn"
         );
 
+    const adminPassword =
+        sessionStorage.getItem(
+            "adminPassword"
+        );
+
 
     if (
-        isLoggedIn !== "true"
+        loggedIn !== "true" ||
+        !adminPassword
     ) {
 
         window.location.href =
@@ -611,10 +567,9 @@ if (
 }
 
 
-/* =========================================
-   ADD STUDENT RESULT
-   USES EDGE FUNCTION
-========================================= */
+// ================================
+// ADD RESULT
+// ================================
 
 const addResultForm =
     document.getElementById(
@@ -631,72 +586,6 @@ if (addResultForm) {
             event.preventDefault();
 
 
-            const name =
-                document
-                    .getElementById(
-                        "addStudentName"
-                    )
-                    .value
-                    .trim();
-
-
-            const roll =
-                document
-                    .getElementById(
-                        "addRollNumber"
-                    )
-                    .value
-                    .trim();
-
-
-            const className =
-                document
-                    .getElementById(
-                        "addClassName"
-                    )
-                    .value;
-
-
-            const bangla =
-                Number(
-                    document
-                        .getElementById(
-                            "banglaMarks"
-                        )
-                        .value
-                );
-
-
-            const english =
-                Number(
-                    document
-                        .getElementById(
-                            "englishMarks"
-                        )
-                        .value
-                );
-
-
-            const math =
-                Number(
-                    document
-                        .getElementById(
-                            "mathMarks"
-                        )
-                        .value
-                );
-
-
-            const science =
-                Number(
-                    document
-                        .getElementById(
-                            "scienceMarks"
-                        )
-                        .value
-                );
-
-
             const message =
                 document.getElementById(
                     "addResultMessage"
@@ -711,38 +600,79 @@ if (addResultForm) {
 
             if (!adminPassword) {
 
-                if (message) {
+                message.textContent =
+                    "Please log in again.";
 
-                    message.innerHTML = `
-
-                        <div class="result-error">
-
-                            Please log in again.
-
-                        </div>
-
-                    `;
-
-                }
+                window.location.href =
+                    "admin.html";
 
                 return;
 
             }
 
 
-            if (message) {
+            const name =
+                document.getElementById(
+                    "addStudentName"
+                ).value.trim();
 
-                message.innerHTML = `
 
-                    <div class="result-success">
+            const roll =
+                document.getElementById(
+                    "addRollNumber"
+                ).value.trim();
 
-                        Saving result...
 
-                    </div>
+            const studentClass =
+                document.getElementById(
+                    "addClassName"
+                ).value;
 
-                `;
+
+            const bangla =
+                document.getElementById(
+                    "banglaMarks"
+                ).value;
+
+
+            const english =
+                document.getElementById(
+                    "englishMarks"
+                ).value;
+
+
+            const math =
+                document.getElementById(
+                    "mathMarks"
+                ).value;
+
+
+            const science =
+                document.getElementById(
+                    "scienceMarks"
+                ).value;
+
+
+            if (
+                !name ||
+                !roll ||
+                !studentClass ||
+                bangla === "" ||
+                english === "" ||
+                math === "" ||
+                science === ""
+            ) {
+
+                message.textContent =
+                    "Please fill in all fields.";
+
+                return;
 
             }
+
+
+            message.textContent =
+                "Saving result...";
 
 
             try {
@@ -778,7 +708,7 @@ if (addResultForm) {
                                         roll,
 
                                     class:
-                                        className,
+                                        studentClass,
 
                                     bangla:
                                         bangla,
@@ -804,7 +734,6 @@ if (addResultForm) {
 
                 let data = {};
 
-
                 try {
 
                     data =
@@ -822,17 +751,9 @@ if (addResultForm) {
                 if (!response.ok) {
 
                     throw new Error(
-
-                        "HTTP " +
-                        response.status +
-                        ": " +
-
-                        (
-                            data.error ||
-                            responseText ||
-                            "Failed to save result."
-                        )
-
+                        data.error ||
+                        responseText ||
+                        "Failed to add result."
                     );
 
                 }
@@ -841,28 +762,15 @@ if (addResultForm) {
                 if (!data.success) {
 
                     throw new Error(
-
                         data.error ||
-                        "Failed to save result."
-
+                        "Failed to add result."
                     );
 
                 }
 
 
-                if (message) {
-
-                    message.innerHTML = `
-
-                        <div class="result-success">
-
-                            Result added successfully.
-
-                        </div>
-
-                    `;
-
-                }
+                message.textContent =
+                    "Result added successfully!";
 
 
                 addResultForm.reset();
@@ -873,28 +781,15 @@ if (addResultForm) {
 
             } catch (error) {
 
-                console.error(error);
+                console.error(
+                    "ADD RESULT ERROR:",
+                    error
+                );
 
 
-                if (message) {
-
-                    message.innerHTML = `
-
-                        <div class="result-error">
-
-                            Failed to save result.
-
-                            <br><br>
-
-                            ${escapeHTML(
-                                error.message
-                            )}
-
-                        </div>
-
-                    `;
-
-                }
+                message.textContent =
+                    "Error: " +
+                    error.message;
 
             }
 
@@ -904,268 +799,176 @@ if (addResultForm) {
 }
 
 
-/* =========================================
-   DISPLAY ADMIN RESULTS
-========================================= */
+// ================================
+// DISPLAY ADMIN RESULTS
+// ================================
 
 async function displayAdminResults() {
 
-    const adminResults =
+    const container =
         document.getElementById(
             "adminResults"
         );
 
 
-    if (!adminResults) {
+    if (!container) {
 
         return;
 
     }
 
 
-    adminResults.innerHTML = `
-
-        <p>
-            Loading results...
-        </p>
-
-    `;
+    container.innerHTML =
+        "Loading results...";
 
 
     try {
 
-        const results =
+        const data =
             await supabaseRequest(
-
-                SUPABASE_URL +
-                "/rest/v1/results" +
-                "?select=*&order=id.asc"
-
+                "results?select=*&order=id.desc"
             );
 
 
         if (
-            results.length === 0
+            !data ||
+            data.length === 0
         ) {
 
-            adminResults.innerHTML = `
-
-                <p>
-
-                    No results have been
-                    added yet.
-
-                </p>
-
-            `;
+            container.innerHTML =
+                "<p>No results found.</p>";
 
             return;
 
         }
 
 
-        let tableHTML = `
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Roll
-                        </th>
-
-                        <th>
-                            Class
-                        </th>
-
-                        <th>
-                            Bangla
-                        </th>
-
-                        <th>
-                            English
-                        </th>
-
-                        <th>
-                            Math
-                        </th>
-
-                        <th>
-                            Science
-                        </th>
-
-                        <th>
-                            Total
-                        </th>
-
-                        <th>
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-        `;
+        container.innerHTML =
+            "";
 
 
-        results.forEach(
-            function (result) {
+        data.forEach(
+            function (student) {
 
-                let marks = {};
+                let resultData =
+                    student.result;
 
 
-                try {
+                if (
+                    typeof resultData ===
+                    "string"
+                ) {
 
-                    marks =
-                        JSON.parse(
-                            result.result
-                        );
+                    try {
 
-                } catch (error) {
+                        resultData =
+                            JSON.parse(
+                                resultData
+                            );
 
-                    marks = {};
+                    } catch (error) {
+
+                        resultData = {};
+
+                    }
 
                 }
 
 
-                tableHTML += `
-
-                    <tr>
-
-                        <td>
-
-                            ${escapeHTML(
-                                result.student_name
-                            )}
-
-                        </td>
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                        <td>
-
-                            ${escapeHTML(
-                                result.roll
-                            )}
-
-                        </td>
+                card.className =
+                    "admin-result-card";
 
 
-                        <td>
+                card.innerHTML = `
 
-                            ${escapeHTML(
-                                result.class
-                            )}
+                    <h3>
+                        ${escapeHTML(
+                            student.student_name
+                        )}
+                    </h3>
 
-                        </td>
+                    <p>
+                        Roll:
+                        ${escapeHTML(
+                            student.roll
+                        )}
+                    </p>
 
+                    <p>
+                        Class:
+                        ${escapeHTML(
+                            student.class
+                        )}
+                    </p>
 
-                        <td>
+                    <p>
+                        Bangla:
+                        ${resultData.bangla ?? 0}
+                    </p>
 
-                            ${marks.bangla ?? "-"}
+                    <p>
+                        English:
+                        ${resultData.english ?? 0}
+                    </p>
 
-                        </td>
+                    <p>
+                        Math:
+                        ${resultData.math ?? 0}
+                    </p>
 
+                    <p>
+                        Science:
+                        ${resultData.science ?? 0}
+                    </p>
 
-                        <td>
+                    <p>
+                        Total:
+                        ${resultData.total ?? 0}
+                    </p>
 
-                            ${marks.english ?? "-"}
-
-                        </td>
-
-
-                        <td>
-
-                            ${marks.math ?? "-"}
-
-                        </td>
-
-
-                        <td>
-
-                            ${marks.science ?? "-"}
-
-                        </td>
-
-
-                        <td>
-
-                            ${marks.total ?? "-"}
-
-                        </td>
-
-
-                        <td>
-
-                            <button
-                                type="button"
-                                onclick="deleteResult(${result.id})"
-                            >
-
-                                Delete
-
-                            </button>
-
-                        </td>
-
-                    </tr>
+                    <button
+                        type="button"
+                        onclick="deleteResult(${student.id})"
+                    >
+                        Delete
+                    </button>
 
                 `;
+
+
+                container.appendChild(
+                    card
+                );
 
             }
         );
 
 
-        tableHTML += `
-
-                </tbody>
-
-            </table>
-
-        `;
-
-
-        adminResults.innerHTML =
-            tableHTML;
-
-
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "DISPLAY RESULTS ERROR:",
+            error
+        );
 
 
-        adminResults.innerHTML = `
-
-            <div class="result-error">
-
-                Could not load results.
-
-                <br><br>
-
-                ${escapeHTML(
-                    error.message
-                )}
-
-            </div>
-
-        `;
+        container.innerHTML =
+            "<p>Could not load results.</p>";
 
     }
 
 }
 
 
-/* =========================================
-   DELETE RESULT
-========================================= */
+// ================================
+// DELETE RESULT
+// ================================
 
 async function deleteResult(id) {
 
@@ -1245,7 +1048,6 @@ async function deleteResult(id) {
 
         let data = {};
 
-
         try {
 
             data =
@@ -1263,17 +1065,14 @@ async function deleteResult(id) {
         if (!response.ok) {
 
             throw new Error(
-
                 "HTTP " +
                 response.status +
                 ": " +
-
                 (
                     data.error ||
                     responseText ||
                     "Delete failed."
                 )
-
             );
 
         }
@@ -1282,10 +1081,8 @@ async function deleteResult(id) {
         if (!data.success) {
 
             throw new Error(
-
                 data.error ||
                 "Delete failed."
-
             );
 
         }
@@ -1308,10 +1105,8 @@ async function deleteResult(id) {
 
 
         alert(
-
             "Delete failed:\n\n" +
             error.message
-
         );
 
     }
@@ -1319,24 +1114,9 @@ async function deleteResult(id) {
 }
 
 
-/* =========================================
-   LOAD ADMIN RESULTS
-========================================= */
-
-if (
-    document.getElementById(
-        "adminResults"
-    )
-) {
-
-    displayAdminResults();
-
-}
-
-
-/* =========================================
-   ADMIN LOGOUT
-========================================= */
+// ================================
+// LOGOUT
+// ================================
 
 const logoutButton =
     document.getElementById(
@@ -1350,13 +1130,13 @@ if (logoutButton) {
         "click",
         function () {
 
-            localStorage.removeItem(
-                "adminLoggedIn"
+            sessionStorage.removeItem(
+                "adminPassword"
             );
 
 
-            sessionStorage.removeItem(
-                "adminPassword"
+            localStorage.removeItem(
+                "adminLoggedIn"
             );
 
 
@@ -1369,36 +1149,44 @@ if (logoutButton) {
 }
 
 
-/* =========================================
-   HTML SAFETY
-========================================= */
+// ================================
+// LOAD ADMIN RESULTS
+// ================================
+
+if (
+    window.location.pathname.endsWith(
+        "admin-panel.html"
+    )
+) {
+
+    displayAdminResults();
+
+}
+
+
+// ================================
+// ESCAPE HTML
+// ================================
 
 function escapeHTML(value) {
 
-    return String(
-        value ?? ""
-    )
-
+    return String(value)
         .replace(
             /&/g,
             "&amp;"
         )
-
         .replace(
             /</g,
             "&lt;"
         )
-
         .replace(
             />/g,
             "&gt;"
         )
-
         .replace(
             /"/g,
             "&quot;"
         )
-
         .replace(
             /'/g,
             "&#039;"
