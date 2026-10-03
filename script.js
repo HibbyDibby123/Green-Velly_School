@@ -258,7 +258,6 @@ if (resultForm) {
 
 }
 
-
 /* =========================================
    ADMIN LOGIN
 ========================================= */
@@ -268,49 +267,113 @@ const adminLoginForm =
 
 if (adminLoginForm) {
 
-    adminLoginForm.addEventListener("submit", function (event) {
+    adminLoginForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const password =
-            document.getElementById("adminPassword").value;
+            const password =
+                document
+                    .getElementById("adminPassword")
+                    .value;
 
-        const adminMessage =
-            document.getElementById("adminMessage");
+            const adminMessage =
+                document.getElementById("adminMessage");
 
-        const correctPassword =
-            "admin123";
 
-        if (password === correctPassword) {
+            if (adminMessage) {
 
-            sessionStorage.setItem(
-                "adminPassword",
-                password
-            );
+                adminMessage.innerHTML = `
+                    <div class="admin-success">
+                        Checking password...
+                    </div>
+                `;
 
-            localStorage.setItem(
-                "adminLoggedIn",
-                "true"
-            );
+            }
 
-            window.location.href =
-                "admin-panel.html";
 
-        } else {
+            try {
 
-            adminMessage.innerHTML = `
-                <div class="admin-error">
-                    Incorrect password. Please try again.
-                </div>
-            `;
+                const response =
+                    await fetch(
+                        EDGE_FUNCTION_URL,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                action: "login",
+
+                                password: password
+
+                            })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Incorrect password."
+                    );
+
+                }
+
+
+                /* SAVE LOGIN */
+
+                sessionStorage.setItem(
+                    "adminPassword",
+                    password
+                );
+
+                localStorage.setItem(
+                    "adminLoggedIn",
+                    "true"
+                );
+
+
+                /* OPEN ADMIN PANEL */
+
+                window.location.href =
+                    "admin-panel.html";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                if (adminMessage) {
+
+                    adminMessage.innerHTML = `
+                        <div class="admin-error">
+                            Incorrect password.
+                        </div>
+                    `;
+
+                }
+
+            }
 
         }
-
-    });
+    );
 
 }
-
-
 /* =========================================
    ADMIN PANEL ACCESS
 ========================================= */
