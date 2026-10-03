@@ -606,7 +606,7 @@ if (adminLoginForm) {
 
 
                 window.location.href =
-                    "admin-panel.html";
+                    "admin-panel.html?v=999";
 
 
             } catch (error) {
@@ -655,7 +655,7 @@ if (
     ) {
 
         window.location.href =
-            "admin.html";
+            "admin.html?v=999";
 
     }
 
@@ -686,7 +686,6 @@ if (addResultForm) {
                     "addResultMessage"
                 );
 
-
             const adminPassword =
                 sessionStorage.getItem(
                     "adminPassword"
@@ -699,7 +698,7 @@ if (addResultForm) {
                     "Please log in again.";
 
                 window.location.href =
-                    "admin.html";
+                    "admin.html?v=999";
 
                 return;
 
@@ -948,21 +947,13 @@ async function displayAdminResults() {
                     <tr>
 
                         <th>Name</th>
-
                         <th>Roll</th>
-
                         <th>Class</th>
-
                         <th>Bangla</th>
-
                         <th>English</th>
-
                         <th>Math</th>
-
                         <th>Science</th>
-
                         <th>Total</th>
-
                         <th>Action</th>
 
                     </tr>
@@ -1114,7 +1105,7 @@ async function deleteResult(id) {
 
 
         window.location.href =
-            "admin.html";
+            "admin.html?v=999";
 
 
         return;
@@ -1270,7 +1261,7 @@ if (logoutButton) {
 
 
             window.location.href =
-                "admin.html";
+                "admin.html?v=999";
 
         }
     );
