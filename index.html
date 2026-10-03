@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +7,7 @@
 
     <title>Green Valley School</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=999">
 </head>
 
 <body>
@@ -18,7 +17,7 @@
 
         <div class="container header-content">
 
-            <a href="index.html" class="school-logo">
+            <a href="index.html?v=999" class="school-logo">
 
                 <div class="logo-circle">
                     GV
@@ -26,35 +25,30 @@
 
                 <div>
                     <h1>Green Valley School</h1>
-
-                    <p>
-                        Education • Discipline • Success
-                    </p>
+                    <p>Education • Discipline • Success</p>
                 </div>
 
             </a>
 
-
-            <!-- NAVIGATION -->
             <nav class="navbar">
 
-                <a href="index.html" class="active">
+                <a href="index.html?v=999" class="active">
                     Home
                 </a>
 
-                <a href="result.html">
+                <a href="result.html?v=999">
                     Result
                 </a>
 
-                <a href="about.html">
+                <a href="about.html?v=999">
                     About
                 </a>
 
-                <a href="contact.html">
+                <a href="contact.html?v=999">
                     Contact
                 </a>
 
-                <a href="admin.html">
+                <a href="admin.html?v=999">
                     Admin
                 </a>
 
@@ -72,7 +66,6 @@
 
             <div class="container hero-content">
 
-                <!-- HERO TEXT -->
                 <div class="hero-text">
 
                     <p class="welcome-text">
@@ -90,15 +83,15 @@
                         and preparing students for a successful future.
                     </p>
 
-
-                    <!-- HERO BUTTONS -->
                     <div class="hero-buttons">
 
-                        <a href="result.html" class="btn btn-primary">
+                        <a href="result.html?v=999"
+                           class="btn btn-primary">
                             Check Result
                         </a>
 
-                        <a href="about.html" class="btn btn-secondary">
+                        <a href="about.html?v=999"
+                           class="btn btn-secondary">
                             Learn More
                         </a>
 
@@ -107,7 +100,6 @@
                 </div>
 
 
-                <!-- HERO CARD -->
                 <div class="hero-card">
 
                     <div class="school-emblem">
@@ -151,7 +143,6 @@
 
                 <div class="welcome-grid">
 
-                    <!-- TEXT -->
                     <div class="welcome-text">
 
                         <h3>
@@ -176,14 +167,14 @@
                             for both academic success and life beyond school.
                         </p>
 
-                        <a href="about.html" class="text-link">
+                        <a href="about.html?v=999"
+                           class="text-link">
                             Read More →
                         </a>
 
                     </div>
 
 
-                    <!-- INFORMATION BOX -->
                     <div class="info-box">
 
                         <div class="info-item">
@@ -276,8 +267,8 @@
 
                 <div class="quick-grid">
 
-                    <!-- RESULT -->
-                    <a href="result.html" class="quick-card">
+                    <a href="result.html?v=999"
+                       class="quick-card">
 
                         <div class="quick-icon">
                             R
@@ -299,8 +290,8 @@
                     </a>
 
 
-                    <!-- ABOUT -->
-                    <a href="about.html" class="quick-card">
+                    <a href="about.html?v=999"
+                       class="quick-card">
 
                         <div class="quick-icon">
                             A
@@ -322,8 +313,8 @@
                     </a>
 
 
-                    <!-- CONTACT -->
-                    <a href="contact.html" class="quick-card">
+                    <a href="contact.html?v=999"
+                       class="quick-card">
 
                         <div class="quick-icon">
                             C
@@ -345,8 +336,8 @@
                     </a>
 
 
-                    <!-- ADMIN -->
-                    <a href="admin.html" class="quick-card">
+                    <a href="admin.html?v=999"
+                       class="quick-card">
 
                         <div class="quick-icon">
                             A
@@ -421,7 +412,6 @@
 
         <div class="container footer-content">
 
-            <!-- SCHOOL -->
             <div class="footer-school">
 
                 <h3>
@@ -435,37 +425,35 @@
             </div>
 
 
-            <!-- QUICK LINKS -->
             <div class="footer-links">
 
                 <h4>
                     Quick Links
                 </h4>
 
-                <a href="index.html">
+                <a href="index.html?v=999">
                     Home
                 </a>
 
-                <a href="result.html">
+                <a href="result.html?v=999">
                     Result
                 </a>
 
-                <a href="about.html">
+                <a href="about.html?v=999">
                     About
                 </a>
 
-                <a href="contact.html">
+                <a href="contact.html?v=999">
                     Contact
                 </a>
 
-                <a href="admin.html">
+                <a href="admin.html?v=999">
                     Admin
                 </a>
 
             </div>
 
 
-            <!-- CONTACT -->
             <div class="footer-contact">
 
                 <h4>
@@ -516,17 +504,10 @@
             ".footer-content > div"
         );
 
-
-        /* Add reveal class */
-
         revealElements.forEach(function (element) {
-
             element.classList.add("reveal");
-
         });
 
-
-        /* Create observer */
 
         const revealObserver = new IntersectionObserver(
 
@@ -535,13 +516,9 @@
                 entries.forEach(function (entry) {
 
                     if (entry.isIntersecting) {
-
                         entry.target.classList.add("show");
-
                     } else {
-
                         entry.target.classList.remove("show");
-
                     }
 
                 });
@@ -555,18 +532,14 @@
         );
 
 
-        /* Start observing */
-
         revealElements.forEach(function (element) {
-
             revealObserver.observe(element);
-
         });
 
     </script>
 
 
-<script src="script.js?v=4"></script>
+    <script src="script.js?v=999"></script>
 
 </body>
 
