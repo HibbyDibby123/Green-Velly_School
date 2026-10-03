@@ -5,40 +5,48 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    content="width=device-width, initial-scale=1.0">
+    <title>
+        Check Result | Green Valley School
+    </title>
 
-    <title>Check Result | Green Valley School</title>
-
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
 </head>
+
 
 <body>
 
 
-    <!-- HEADER -->
+    <!-- =========================================
+         HEADER
+    ========================================== -->
 
     <header class="site-header">
 
-        <div class="container header-content">
+        <div class="header-inner">
 
-            <a href="index.html" class="school-logo">
+            <div class="logo-area">
 
-                <div class="logo-circle">
-                    GV
-                </div>
+                <h1>
+                    Green Valley School
+                </h1>
 
-                <div>
-                    <h1>Green Valley School</h1>
-                    <p>Education • Discipline • Success</p>
-                </div>
+                <p>
+                    Excellence in Education
+                </p>
 
-            </a>
+            </div>
 
 
-            <nav class="navbar">
+            <nav class="main-nav">
 
                 <a href="index.html">
                     Home
@@ -46,14 +54,6 @@
 
                 <a href="result.html" class="active">
                     Result
-                </a>
-
-                <a href="about.html">
-                    About
-                </a>
-
-                <a href="contact.html">
-                    Contact
                 </a>
 
                 <a href="admin.html">
@@ -67,11 +67,17 @@
     </header>
 
 
-    <!-- RESULT -->
+
+    <!-- =========================================
+         RESULT PAGE
+    ========================================== -->
 
     <main class="result-page">
 
         <div class="result-container">
+
+
+            <!-- PAGE HEADING -->
 
             <div class="section-heading">
 
@@ -86,17 +92,22 @@
                 <div class="heading-line"></div>
 
                 <p>
-                    Enter your student information below to view
-                    your examination result.
+                    Enter your student information below
+                    to view your examination result.
                 </p>
 
             </div>
 
 
+
+            <!-- RESULT BOX -->
+
             <div class="result-box">
 
                 <form id="resultForm">
 
+
+                    <!-- STUDENT NAME -->
 
                     <div class="form-group">
 
@@ -114,6 +125,9 @@
                     </div>
 
 
+
+                    <!-- ROLL NUMBER -->
+
                     <div class="form-group">
 
                         <label for="rollNumber">
@@ -121,7 +135,7 @@
                         </label>
 
                         <input
-                            type="number"
+                            type="text"
                             id="rollNumber"
                             placeholder="Enter your roll number"
                             required
@@ -130,55 +144,50 @@
                     </div>
 
 
+
+                    <!-- CLASS -->
+
                     <div class="form-group">
 
                         <label for="className">
                             Class
                         </label>
 
-                        <select id="className" required>
-
-                            <option value="">
-                                Select Class
-                            </option>
-
-                            <option value="6">
-                                Class 6
-                            </option>
-
-                            <option value="7">
-                                Class 7
-                            </option>
-
-                            <option value="8">
-                                Class 8
-                            </option>
-
-                            <option value="9">
-                                Class 9
-                            </option>
-
-                            <option value="10">
-                                Class 10
-                            </option>
-
-                        </select>
+                        <input
+                            type="text"
+                            id="className"
+                            placeholder="Enter your class"
+                            required
+                        >
 
                     </div>
 
 
+
+                    <!-- BUTTON -->
+
                     <button
                         type="submit"
-                        class="result-button">
-
+                        class="result-button"
+                    >
                         Check Result
-
                     </button>
+
 
                 </form>
 
 
+
+                <!-- MESSAGE -->
+
                 <div id="resultMessage"></div>
+
+
+
+                <!-- RESULT OUTPUT -->
+
+                <div id="resultContainer"></div>
+
 
             </div>
 
@@ -187,40 +196,28 @@
     </main>
 
 
-    <!-- FOOTER -->
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
 
     <footer class="site-footer">
 
-        <div class="container footer-content">
-
-            <div class="footer-school">
-
-                <h3>
-                    Green Valley School
-                </h3>
-
-                <p>
-                    Education • Discipline • Success
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="footer-bottom">
-
-            <p>
-                © 2026 Green Valley School.
-                All rights reserved.
-            </p>
-
-        </div>
+        <p>
+            © 2026 Green Valley School.
+            All rights reserved.
+        </p>
 
     </footer>
 
 
-<script src="script.js?v=4"></script>
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="script.js?v=4"></script>
+
 
 </body>
 
