@@ -18,6 +18,7 @@ const EDGE_FUNCTION_URL =
     SUPABASE_URL +
     "/functions/v1/dynamic-handler";
 
+
 /* =========================================
    SCROLL GLIDE
 ========================================= */
@@ -48,9 +49,13 @@ document.addEventListener("DOMContentLoaded", function () {
             entries.forEach(function (entry) {
 
                 if (entry.isIntersecting) {
+
                     entry.target.classList.add("show");
+
                 } else {
+
                     entry.target.classList.remove("show");
+
                 }
 
             });
@@ -74,22 +79,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function supabaseRequest(url, options = {}) {
 
-    const response = await fetch(url, {
+    const response =
+        await fetch(
+            url,
+            {
 
-        ...options,
+                ...options,
 
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY,
-            "Content-Type": "application/json",
-            ...(options.headers || {})
-        }
+                headers: {
 
-    });
+                    "apikey":
+                        SUPABASE_KEY,
+
+                    "Authorization":
+                        "Bearer " +
+                        SUPABASE_KEY,
+
+                    "Content-Type":
+                        "application/json",
+
+                    ...(options.headers || {})
+
+                }
+
+            }
+        );
+
 
     if (!response.ok) {
 
-        const errorText = await response.text();
+        const errorText =
+            await response.text();
 
         throw new Error(
             "HTTP " +
@@ -100,9 +120,13 @@ async function supabaseRequest(url, options = {}) {
 
     }
 
+
     if (response.status === 204) {
+
         return null;
+
     }
+
 
     return await response.json();
 
@@ -114,7 +138,10 @@ async function supabaseRequest(url, options = {}) {
 ========================================= */
 
 const resultForm =
-    document.getElementById("resultForm");
+    document.getElementById(
+        "resultForm"
+    );
+
 
 if (resultForm) {
 
@@ -124,22 +151,32 @@ if (resultForm) {
 
             event.preventDefault();
 
+
             const studentName =
                 document
-                    .getElementById("studentName")
+                    .getElementById(
+                        "studentName"
+                    )
                     .value
                     .trim();
+
 
             const rollNumber =
                 document
-                    .getElementById("rollNumber")
+                    .getElementById(
+                        "rollNumber"
+                    )
                     .value
                     .trim();
 
+
             const className =
                 document
-                    .getElementById("className")
+                    .getElementById(
+                        "className"
+                    )
                     .value;
+
 
             const resultMessage =
                 document.getElementById(
@@ -148,9 +185,13 @@ if (resultForm) {
 
 
             resultMessage.innerHTML = `
+
                 <div class="result-success">
+
                     Searching result...
+
                 </div>
+
             `;
 
 
@@ -160,31 +201,46 @@ if (resultForm) {
                     SUPABASE_URL +
                     "/rest/v1/results" +
                     "?student_name=eq." +
-                    encodeURIComponent(studentName) +
+                    encodeURIComponent(
+                        studentName
+                    ) +
                     "&roll=eq." +
-                    encodeURIComponent(rollNumber) +
+                    encodeURIComponent(
+                        rollNumber
+                    ) +
                     "&class=eq." +
-                    encodeURIComponent(className) +
+                    encodeURIComponent(
+                        className
+                    ) +
                     "&select=*";
 
 
                 const results =
-                    await supabaseRequest(url);
+                    await supabaseRequest(
+                        url
+                    );
 
 
-                if (results.length === 0) {
+                if (
+                    results.length === 0
+                ) {
 
                     resultMessage.innerHTML = `
+
                         <div class="result-error">
 
-                            <h3>Result Not Found</h3>
+                            <h3>
+                                Result Not Found
+                            </h3>
 
                             <p>
-                                Please check the student name,
+                                Please check the
+                                student name,
                                 roll number and class.
                             </p>
 
                         </div>
+
                     `;
 
                     return;
@@ -209,66 +265,114 @@ if (resultForm) {
                 } catch (error) {
 
                     marks = {
-                        total: foundResult.result
+
+                        total:
+                            foundResult.result
+
                     };
 
                 }
 
 
                 resultMessage.innerHTML = `
+
                     <div class="result-success">
 
-                        <h3>Result Found</h3>
+                        <h3>
+                            Result Found
+                        </h3>
+
 
                         <p>
-                            <strong>Name:</strong>
+
+                            <strong>
+                                Name:
+                            </strong>
+
                             ${escapeHTML(
                                 foundResult.student_name
                             )}
+
                         </p>
 
+
                         <p>
-                            <strong>Roll:</strong>
+
+                            <strong>
+                                Roll:
+                            </strong>
+
                             ${escapeHTML(
                                 foundResult.roll
                             )}
+
                         </p>
 
+
                         <p>
-                            <strong>Class:</strong>
+
+                            <strong>
+                                Class:
+                            </strong>
+
                             ${escapeHTML(
                                 foundResult.class
                             )}
+
                         </p>
 
-                        <h4>Marks</h4>
+
+                        <h4>
+                            Marks
+                        </h4>
+
 
                         <p>
+
                             Bangla:
                             ${marks.bangla ?? "-"}
+
                         </p>
 
+
                         <p>
+
                             English:
                             ${marks.english ?? "-"}
+
                         </p>
 
+
                         <p>
+
                             Mathematics:
                             ${marks.math ?? "-"}
+
                         </p>
 
+
                         <p>
+
                             Science:
                             ${marks.science ?? "-"}
+
                         </p>
+
 
                         <p>
-                            <strong>Total:</strong>
-                            ${marks.total ?? "-"} / 400
+
+                            <strong>
+                                Total:
+                            </strong>
+
+                            ${marks.total ?? "-"}
+                            / 400
+
                         </p>
 
+
                     </div>
+
                 `;
 
 
@@ -276,16 +380,22 @@ if (resultForm) {
 
                 console.error(error);
 
+
                 resultMessage.innerHTML = `
+
                     <div class="result-error">
 
-                        <h3>Something went wrong</h3>
+                        <h3>
+                            Something went wrong
+                        </h3>
 
                         <p>
-                            Could not connect to the result database.
+                            Could not connect
+                            to the result database.
                         </p>
 
                     </div>
+
                 `;
 
             }
@@ -304,6 +414,7 @@ const adminLoginForm =
     document.getElementById(
         "adminLoginForm"
     );
+
 
 if (adminLoginForm) {
 
@@ -331,9 +442,13 @@ if (adminLoginForm) {
             if (adminMessage) {
 
                 adminMessage.innerHTML = `
+
                     <div class="admin-success">
+
                         Checking password...
+
                     </div>
+
                 `;
 
             }
@@ -345,22 +460,27 @@ if (adminLoginForm) {
                     await fetch(
                         EDGE_FUNCTION_URL,
                         {
-                            method: "POST",
+
+                            method:
+                                "POST",
 
                             headers: {
+
                                 "Content-Type":
                                     "application/json"
+
                             },
 
-                            body: JSON.stringify({
+                            body:
+                                JSON.stringify({
 
-                                action:
-                                    "login",
+                                    action:
+                                        "login",
 
-                                password:
-                                    password
+                                    password:
+                                        password
 
-                            })
+                                })
 
                         }
                     );
@@ -393,14 +513,17 @@ if (adminLoginForm) {
                 ) {
 
                     throw new Error(
+
                         "HTTP " +
                         response.status +
                         ": " +
+
                         (
                             data.error ||
                             responseText ||
                             "Login request failed."
                         )
+
                     );
 
                 }
@@ -433,9 +556,12 @@ if (adminLoginForm) {
                 if (adminMessage) {
 
                     adminMessage.innerHTML = `
+
                         <div class="admin-error">
 
-                            <strong>Login error:</strong>
+                            <strong>
+                                Login error:
+                            </strong>
 
                             <br><br>
 
@@ -444,6 +570,7 @@ if (adminLoginForm) {
                             )}
 
                         </div>
+
                     `;
 
                 }
@@ -472,7 +599,9 @@ if (
         );
 
 
-    if (isLoggedIn !== "true") {
+    if (
+        isLoggedIn !== "true"
+    ) {
 
         window.location.href =
             "admin.html";
@@ -585,9 +714,13 @@ if (addResultForm) {
                 if (message) {
 
                     message.innerHTML = `
+
                         <div class="result-error">
+
                             Please log in again.
+
                         </div>
+
                     `;
 
                 }
@@ -600,9 +733,13 @@ if (addResultForm) {
             if (message) {
 
                 message.innerHTML = `
+
                     <div class="result-success">
+
                         Saving result...
+
                     </div>
+
                 `;
 
             }
@@ -614,43 +751,48 @@ if (addResultForm) {
                     await fetch(
                         EDGE_FUNCTION_URL,
                         {
-                            method: "POST",
+
+                            method:
+                                "POST",
 
                             headers: {
+
                                 "Content-Type":
                                     "application/json"
+
                             },
 
-                            body: JSON.stringify({
+                            body:
+                                JSON.stringify({
 
-                                action:
-                                    "add-result",
+                                    action:
+                                        "add-result",
 
-                                password:
-                                    adminPassword,
+                                    password:
+                                        adminPassword,
 
-                                name:
-                                    name,
+                                    name:
+                                        name,
 
-                                roll:
-                                    roll,
+                                    roll:
+                                        roll,
 
-                                class:
-                                    className,
+                                    class:
+                                        className,
 
-                                bangla:
-                                    bangla,
+                                    bangla:
+                                        bangla,
 
-                                english:
-                                    english,
+                                    english:
+                                        english,
 
-                                math:
-                                    math,
+                                    math:
+                                        math,
 
-                                science:
-                                    science
+                                    science:
+                                        science
 
-                            })
+                                })
 
                         }
                     );
@@ -680,14 +822,17 @@ if (addResultForm) {
                 if (!response.ok) {
 
                     throw new Error(
+
                         "HTTP " +
                         response.status +
                         ": " +
+
                         (
                             data.error ||
                             responseText ||
                             "Failed to save result."
                         )
+
                     );
 
                 }
@@ -696,8 +841,10 @@ if (addResultForm) {
                 if (!data.success) {
 
                     throw new Error(
+
                         data.error ||
                         "Failed to save result."
+
                     );
 
                 }
@@ -706,9 +853,13 @@ if (addResultForm) {
                 if (message) {
 
                     message.innerHTML = `
+
                         <div class="result-success">
+
                             Result added successfully.
+
                         </div>
+
                     `;
 
                 }
@@ -728,6 +879,7 @@ if (addResultForm) {
                 if (message) {
 
                     message.innerHTML = `
+
                         <div class="result-error">
 
                             Failed to save result.
@@ -739,6 +891,7 @@ if (addResultForm) {
                             )}
 
                         </div>
+
                     `;
 
                 }
@@ -764,12 +917,18 @@ async function displayAdminResults() {
 
 
     if (!adminResults) {
+
         return;
+
     }
 
 
     adminResults.innerHTML = `
-        <p>Loading results...</p>
+
+        <p>
+            Loading results...
+        </p>
+
     `;
 
 
@@ -777,18 +936,27 @@ async function displayAdminResults() {
 
         const results =
             await supabaseRequest(
+
                 SUPABASE_URL +
                 "/rest/v1/results" +
                 "?select=*&order=id.asc"
+
             );
 
 
-        if (results.length === 0) {
+        if (
+            results.length === 0
+        ) {
 
             adminResults.innerHTML = `
+
                 <p>
-                    No results have been added yet.
+
+                    No results have been
+                    added yet.
+
                 </p>
+
             `;
 
             return;
@@ -804,15 +972,41 @@ async function displayAdminResults() {
 
                     <tr>
 
-                        <th>Name</th>
-                        <th>Roll</th>
-                        <th>Class</th>
-                        <th>Bangla</th>
-                        <th>English</th>
-                        <th>Math</th>
-                        <th>Science</th>
-                        <th>Total</th>
-                        <th>Action</th>
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Roll
+                        </th>
+
+                        <th>
+                            Class
+                        </th>
+
+                        <th>
+                            Bangla
+                        </th>
+
+                        <th>
+                            English
+                        </th>
+
+                        <th>
+                            Math
+                        </th>
+
+                        <th>
+                            Science
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
 
                     </tr>
 
@@ -848,42 +1042,66 @@ async function displayAdminResults() {
                     <tr>
 
                         <td>
+
                             ${escapeHTML(
                                 result.student_name
                             )}
+
                         </td>
 
+
                         <td>
+
                             ${escapeHTML(
                                 result.roll
                             )}
+
                         </td>
 
+
                         <td>
+
                             ${escapeHTML(
                                 result.class
                             )}
+
                         </td>
 
+
                         <td>
+
                             ${marks.bangla ?? "-"}
+
                         </td>
 
+
                         <td>
+
                             ${marks.english ?? "-"}
+
                         </td>
 
+
                         <td>
+
                             ${marks.math ?? "-"}
+
                         </td>
 
+
                         <td>
+
                             ${marks.science ?? "-"}
+
                         </td>
 
+
                         <td>
+
                             ${marks.total ?? "-"}
+
                         </td>
+
 
                         <td>
 
@@ -891,7 +1109,9 @@ async function displayAdminResults() {
                                 type="button"
                                 onclick="deleteResult(${result.id})"
                             >
+
                                 Delete
+
                             </button>
 
                         </td>
@@ -949,9 +1169,152 @@ async function displayAdminResults() {
 
 async function deleteResult(id) {
 
-    alert(
-        "Delete is not connected to the secure admin function yet."
-    );
+    const adminPassword =
+        sessionStorage.getItem(
+            "adminPassword"
+        );
+
+
+    if (!adminPassword) {
+
+        alert(
+            "Please log in again."
+        );
+
+
+        window.location.href =
+            "admin.html";
+
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this result?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                EDGE_FUNCTION_URL,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            action:
+                                "delete-result",
+
+                            password:
+                                adminPassword,
+
+                            id:
+                                id
+
+                        })
+
+                }
+            );
+
+
+        const responseText =
+            await response.text();
+
+
+        let data = {};
+
+
+        try {
+
+            data =
+                JSON.parse(
+                    responseText
+                );
+
+        } catch (error) {
+
+            data = {};
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                "HTTP " +
+                response.status +
+                ": " +
+
+                (
+                    data.error ||
+                    responseText ||
+                    "Delete failed."
+                )
+
+            );
+
+        }
+
+
+        if (!data.success) {
+
+            throw new Error(
+
+                data.error ||
+                "Delete failed."
+
+            );
+
+        }
+
+
+        alert(
+            "Result deleted successfully."
+        );
+
+
+        displayAdminResults();
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE RESULT ERROR:",
+            error
+        );
+
+
+        alert(
+
+            "Delete failed:\n\n" +
+            error.message
+
+        );
+
+    }
 
 }
 
@@ -1012,23 +1375,30 @@ if (logoutButton) {
 
 function escapeHTML(value) {
 
-    return String(value ?? "")
+    return String(
+        value ?? ""
+    )
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
