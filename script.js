@@ -91,7 +91,12 @@ async function supabaseRequest(url, options = {}) {
 
         const errorText = await response.text();
 
-        throw new Error(errorText);
+        throw new Error(
+            "HTTP " +
+            response.status +
+            ": " +
+            errorText
+        );
 
     }
 
@@ -361,8 +366,25 @@ if (adminLoginForm) {
                     );
 
 
-                const data =
-                    await response.json();
+                const responseText =
+                    await response.text();
+
+
+                let data = {};
+
+
+                try {
+
+                    data =
+                        JSON.parse(
+                            responseText
+                        );
+
+                } catch (error) {
+
+                    data = {};
+
+                }
 
 
                 if (
@@ -371,8 +393,14 @@ if (adminLoginForm) {
                 ) {
 
                     throw new Error(
-                        data.error ||
-                        "Incorrect password."
+                        "HTTP " +
+                        response.status +
+                        ": " +
+                        (
+                            data.error ||
+                            responseText ||
+                            "Login request failed."
+                        )
                     );
 
                 }
@@ -396,14 +424,25 @@ if (adminLoginForm) {
 
             } catch (error) {
 
-                console.error(error);
+                console.error(
+                    "ADMIN LOGIN ERROR:",
+                    error
+                );
 
 
                 if (adminMessage) {
 
                     adminMessage.innerHTML = `
                         <div class="admin-error">
-                            Incorrect password.
+
+                            <strong>Login error:</strong>
+
+                            <br><br>
+
+                            ${escapeHTML(
+                                error.message
+                            )}
+
                         </div>
                     `;
 
@@ -617,11 +656,44 @@ if (addResultForm) {
                     );
 
 
-                const data =
-                    await response.json();
+                const responseText =
+                    await response.text();
+
+
+                let data = {};
+
+
+                try {
+
+                    data =
+                        JSON.parse(
+                            responseText
+                        );
+
+                } catch (error) {
+
+                    data = {};
+
+                }
 
 
                 if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP " +
+                        response.status +
+                        ": " +
+                        (
+                            data.error ||
+                            responseText ||
+                            "Failed to save result."
+                        )
+                    );
+
+                }
+
+
+                if (!data.success) {
 
                     throw new Error(
                         data.error ||
@@ -855,6 +927,12 @@ async function displayAdminResults() {
             <div class="result-error">
 
                 Could not load results.
+
+                <br><br>
+
+                ${escapeHTML(
+                    error.message
+                )}
 
             </div>
 
